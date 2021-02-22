@@ -9,7 +9,7 @@ class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::with(['user', 'likes'])->paginate(5);
+        $posts = Post::latest()->with(['user', 'likes'])->paginate(5);
 
         return view('posts.index', [
             'posts' => $posts
@@ -31,5 +31,16 @@ class PostController extends Controller
         } else {
             return redirect('login');
         }
+    }
+
+    public function destroy(Post $post, Request $request)
+    {
+        if (!$post->ownedBy($request->user())) {
+            return response(null, 409);
+        }
+
+        $post->delete();
+
+        return back();
     }
 }

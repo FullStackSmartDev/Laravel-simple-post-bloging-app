@@ -12,7 +12,7 @@ class PostLikeController extends Controller
         $this->middleware(['auth']);
     }
 
-    public function store(Request $request, Post $post)
+    public function store(Post $post, Request $request)
     {
         if ($post->likedBy($request->user())) {
             return response(null, 409);
@@ -25,7 +25,7 @@ class PostLikeController extends Controller
         return back();
     }
 
-    public function destroy(Request $request, Post $post)
+    public function destroy(Post $post, Request $request)
     {
         $request->user()->likes()->where('post_id', $post->id)->delete();
 
