@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth'])->only(['store', 'destroy']);
+    }
+
     public function index()
     {
         $posts = Post::latest()->with(['user', 'likes'])->paginate(5);
@@ -25,19 +30,15 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
-        if ($request->user()) {
-            $this->validate($request, [
-                'body' => 'required'
-            ]);
+        $this->validate($request, [
+            'body' => 'required'
+        ]);
 
-            $request->user()->posts()->create([
-                'body' => $request->body
-            ]);
+        $request->user()->posts()->create([
+            'body' => $request->body
+        ]);
 
-            return back();
-        } else {
-            return redirect('login');
-        }
+        return back();
     }
 
     public function destroy(Post $post, Request $request)
